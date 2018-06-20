@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>File Upload Setting</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>File Upload Settings</value>
+    </caseValues>
+    <fields>
+        <label><!-- API Key --></label>
+        <name>API_Key__c</name>
+    </fields>
+    <fields>
+        <label><!-- Config JSON --></label>
+        <name>Config_JSON__c</name>
+    </fields>
+    <fields>
+        <label><!-- Is Default --></label>
+        <name>Is_Default__c</name>
+    </fields>
+    <fields>
+        <label><!-- Private Key --></label>
+        <name>Private_Key__c</name>
+    </fields>
+    <fields>
+        <label><!-- Service --></label>
+        <name>Service__c</name>
+        <picklistValues>
+            <masterLabel>Cloudinary</masterLabel>
+            <translation><!-- Cloudinary --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Salesforce Files</masterLabel>
+            <translation><!-- Salesforce Files --></translation>
+        </picklistValues>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

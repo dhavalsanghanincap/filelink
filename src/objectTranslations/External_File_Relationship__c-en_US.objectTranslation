@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>External File Relationship</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>External File Relationships</value>
+    </caseValues>
+    <fields>
+        <label><!-- Deleted --></label>
+        <name>Deleted__c</name>
+    </fields>
+    <fields>
+        <label><!-- External File --></label>
+        <name>External_File__c</name>
+        <relationshipLabel><!-- External File Relationships --></relationshipLabel>
+    </fields>
+    <fields>
+        <label><!-- Object ID --></label>
+        <name>Object_ID__c</name>
+    </fields>
+    <fields>
+        <label><!-- Object Type --></label>
+        <name>Object_Type__c</name>
+    </fields>
+    <fields>
+        <label><!-- Tags --></label>
+        <name>Tags__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

@@ -1,0 +1,101 @@
+<apex:component controller="Upload_File_Controller" access="Global" id="uploadFileComp"> 
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, 'jquery.min.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.ui.widget.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.iframe-transport.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.fileupload.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.cloudinary.js')}"  />
+    <apex:includeScript value="//cdnjs.cloudflare.com/ajax/libs/he/1.1.1/he.min.js" />
+
+    <apex:attribute name="vSobjectId" type="Id" assignTo="{!objectId}" description="Id for the object to display attachment for" access="global" />
+    <apex:attribute name="RefreshCall" type="String"  description="" access="global" />
+
+    <style>
+        .error-container {
+            display: none;
+            border: 1px solid rgba(255,0,0,0.0);
+            background: rgba(255,0,0,0.6);
+            border-radius: 5px;
+            padding: 0 15px;
+            margin-bottom: 10px;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+    </style>
+    
+    <script type="text/javascript">
+
+    Visualforce.remoting.timeout = 120000;
+    
+    function createLinkCloudinary(e, data) {
+        //Need to https resource url
+        createLink(JSON.parse(e.responseText).public_id, JSON.parse(e.responseText).secure_url)
+
+    }
+
+    function createLinkSalesforce(result, event) {
+        console.log('----> Attempting to create file link...');
+        console.log(result);
+        console.log(event);
+
+        if (event.statusCode !== 200) {
+            document.getElementsByClassName('error-container')[0].style.display = 'block';
+            console.log('----> Attempt unsuccessful. Presenting error...');
+            document.getElementById('error-msg').textContent = 'An error occured: ' + event.message;
+            return;
+        }
+
+        var fileObj = JSON.parse(he.decode(result));
+        createLink(fileObj.externalID, fileObj.fileURL);
+    }
+    
+    function createLink(publicId, url) {
+
+            //var chosen = document.getElementById("j_id0:j_id1:j_id2:theform:j_id29:uploadFileComp:theblock:thetagSection:tags_selected");
+            var chosen = document.querySelector("select[id*='tags_selected']")
+            var arrChosenTags   =   new Array();
+            var intLen  =  chosen.length;
+            
+            for(var i=0; i < intLen; i++)
+            {
+                //alert(chosen.options[i].text);
+                arrChosenTags[i] =   chosen.options[i].text;
+            }
+            
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.Upload_File_Controller.fileUploadedwithTag}',
+                publicId, 
+                url,
+                '{!objectId}', arrChosenTags,
+                function(result){
+                    toogleMe();
+                }
+                
+            );
+       
+    }
+    
+    function toogleMe(){
+        console.log('toogleMe');
+        {!RefreshCall};
+    }
+    
+    </script>
+
+    <div class="error-container">
+        <p id="error-msg" class="error-msg"></p>
+    </div>
+    
+    <apex:pageBlock id="theblock" rendered="{!defaultService == 'Cloudinary'}">
+        <apex:pageBlockSection id="thetagSection">
+            <apex:inputField label="Tags" value="{!efrRecord.Tags__c}" id="tags" html-name="test"/>
+        </apex:pageBlockSection>
+        <c:Cloudinary_Client_Upload callback="createLinkCloudinary(e, data);" callbackError="createLinkCloudinary(e, data);" folder=""/>
+        <apex:commandButton value="Cancel" onclick="toogleMe(); return false;" />
+    </apex:pageBlock>    
+    
+    <apex:pageBlock id="theblockGeneric" rendered="{!defaultService == 'Salesforce Files'}">
+    	<c:Generic_Server_Upload vSobjectId="{!vSobjectId}" RefreshCall="createLinkSalesforce(result, event)" callbackError="createLinkSalesforce(result, event)"/>
+        <apex:commandButton value="Cancel" onclick="toogleMe(); return false;" />
+     </apex:pageBlock> 
+    
+</apex:component>

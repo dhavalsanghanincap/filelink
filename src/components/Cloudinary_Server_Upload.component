@@ -1,0 +1,17 @@
+<apex:component controller="Generic_Server_Upload_Controller" allowDML="true">
+
+    <div style="width:500px;margin:0 auto;">
+      <apex:pageBlock mode="maindetail" title="Upload Image File to Cloudinary" >
+        <apex:pageBlockButtons location="bottom">
+          <apex:commandButton value="Upload" action="{!attachFile}"/>
+        </apex:pageBlockButtons>
+        Upload the Image<br/>
+        <apex:inputFile value="{!picture.body}" filename="{!picture.name}"/>
+      </apex:pageBlock>
+      <apex:pageBlock mode="maindetail" title="Uploaded Image" id="imageBlock">
+        <apex:image value="{!pictureurl}"/>
+      </apex:pageBlock>
+    </div>
+
+
+</apex:component>

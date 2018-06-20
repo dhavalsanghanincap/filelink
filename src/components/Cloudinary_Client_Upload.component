@@ -1,0 +1,96 @@
+<apex:component controller="Cloudinary_Client_Upload_Controller" access="global">
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, 'jquery.min.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.ui.widget.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.iframe-transport.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.fileupload.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.cloudinary.js')}"  />
+
+    <apex:attribute name="callback" description="This javascript function to call after upload"
+                    type="String" /> 
+    <apex:attribute name="callbackError" description="This javascript function to call after upload and there is an error"
+                    type="String" /> 
+    <apex:attribute name="folder" description="Folder for where to save the file"
+                    type="String" assignTo="{!cloudinary.folder}"/> 
+
+    <div style="text-align:center;">
+
+        <input name="file" type="file" 
+               class="cloudinary-fileupload" data-cloudinary-field="image_upload" 
+               data-form-data="" id="input"></input>
+
+    <div class="loader" id="loader"></div> 
+    </div>
+
+<Style>
+    .loader {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        width: 150px;
+        height: 150px;
+        margin: -75px 0 0 -75px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</Style>
+
+
+<script>
+    $.cloudinary.config({ cloud_name: '{!cloudinary.cloudName}', api_key: '{!cloudinary.APIKey}'})
+
+    $('.cloudinary-fileupload').fileupload(
+
+        {
+
+            formData: { 
+                "timestamp":  {!cloudinary.timeStamp}, 
+                // "signature": "{!cloudinary.Signed}", 
+                "api_key": "{!cloudinary.APIKey}" ,
+                //"use_filename": true, 
+                //"unique_filename":false,
+                // "folder":"{!folder}",
+                "upload_preset": "{!preset}"
+            },
+            // preset: "{!preset}",
+            //upload_preset: "{!preset}",
+
+            url: '{!URL}/upload',
+
+            start: function (e) {
+
+                console.log("Starting upload...");
+                document.getElementById("loader").style.display = "block";
+                document.getElementById("input").style.display = "none";
+
+            },
+
+            fail: function (e, data) {
+
+                {!callbackerror}
+
+            },
+
+            complete: function (e, data) {
+                if(e.status !== 200) {
+                    {!callbackerror}
+                    return;
+                }
+                {!callback}
+            }
+
+        });
+
+</script>
+</apex:component>

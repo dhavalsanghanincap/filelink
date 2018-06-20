@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>External File</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>External Files</value>
+    </caseValues>
+    <fields>
+        <label><!-- External ID --></label>
+        <name>External_ID__c</name>
+    </fields>
+    <fields>
+        <label><!-- Filename --></label>
+        <name>Filename__c</name>
+    </fields>
+    <fields>
+        <label><!-- Is Private --></label>
+        <name>Is_Private__c</name>
+    </fields>
+    <fields>
+        <label><!-- Mime Type --></label>
+        <name>Mime_Type__c</name>
+    </fields>
+    <fields>
+        <label><!-- Public URL --></label>
+        <name>Public_URL__c</name>
+    </fields>
+    <fields>
+        <label><!-- Service --></label>
+        <name>Service__c</name>
+        <picklistValues>
+            <masterLabel>Cloudinary</masterLabel>
+            <translation><!-- Cloudinary --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label><!-- Tags --></label>
+        <name>Tags__c</name>
+    </fields>
+    <layouts>
+        <layout>File Link Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>

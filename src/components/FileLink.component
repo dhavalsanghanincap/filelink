@@ -1,0 +1,130 @@
+<apex:component controller="Layout_Controller_Ext" access="global" allowDML="true">
+  <apex:attribute name="vSobjectId" type="Id" assignTo="{!sobjectId}" description="Id for the object to display attachment for" access="global" />
+  <apex:attribute name="openInConsole" type="boolean" default="true" description="Id for the object to display attachment for" access="global" />
+  <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, 'jquery.min.js')}"  />
+  <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.ui.widget.js')}"  />
+  <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.iframe-transport.js')}"  />
+  <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.fileupload.js')}"  />
+  <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, '/jquery.cloudinary.js')}"  />
+  
+  <apex:includeScript value="/support/console/40.0/integration.js"/>
+  <apex:includeScript value="/soap/ajax/33.0/connection.js"/>
+  <apex:includeScript value="/soap/ajax/33.0/apex.js"/>
+  <script type="text/javascript">
+    function testIsInConsole(recordID,url) {
+      if (sforce.console.isInConsole() && {!openInConsole}) {
+        //var primaryTabId = sforce.console.getEnclosingPrimaryTabId();
+        //console.log('primary tab id:'+primaryTabId);
+        if (url==='Delete') {
+          var filerelactionshipRecord = new sforce.SObject("FileLInk__External_File_Relationship__c");
+          filerelactionshipRecord.Id = recordID;
+          /*var result = sforce.connection.delete([filerelactionshipRecord]);
+          if(result[0].getBoolean("success")){
+
+          }else{
+              alert('Error : '+result);
+
+          }*/
+          deleteExternalFile(recordID);
+          return false;
+        }
+        if(url==='edit'){
+          sforce.console.getEnclosingTabId(function(enclosingResult){ 
+            sforce.console.getEnclosingPrimaryTabId(function(primaryResult){ 
+              sforce.console.openSubtab(primaryResult.id, '/apex/Filelink__ExternalFileEdit?objectID=' + recordID, true, recordID, null); 
+            }); 
+          }); 
+          //sforce.console.openPrimaryTab(null, '/apex/Filelink__ExternalFileEdit?objectID='+recordID, true, recordID,null, 'salesforceTab');
+          //sforce.console.openSubtab(primaryTabId, '/apex/Filelink__ExternalFileEdit?objectID=' + recordID, true,recordID, null,null, 'salesforceTab');
+        } else {
+          sforce.console.getEnclosingTabId(function(enclosingResult){ 
+            sforce.console.getEnclosingPrimaryTabId(function(primaryResult){ 
+              sforce.console.openSubtab(primaryResult.id, recordID, true, recordID, null); 
+            }); 
+          }); 
+          //sforce.console.openPrimaryTab(null, recordID, true, recordID,null, 'salesforceTab');
+          //sforce.console.openSubtab(primaryTabId, recordID, true,recordID,  null,null,'salesforceTab');
+        }   
+      } else {
+        if(url==='edit'){
+          console.log(recordID);
+          window.open('/apex/Filelink__ExternalFileEdit?objectID='+recordID, '_blank');
+        } else if(url==='Delete') {
+          //alert(url);
+          deleteExternalFile(recordID);
+        } else {        
+          window.open(recordID, '_blank');
+        }
+      }
+    }
+  </script>
+  <apex:form id="theform">
+    <apex:actionFunction name="vtoggleUploadFile" action="{!toggleUploadFile}" reRender="redirectPanel,normal"/>
+    <apex:actionFunction name="vfalseUploadFile" action="{!falseUploadFile}" reRender="redirectPanel,normal"/>
+    <apex:actionFunction name="deleteExternalFile" action="{!deleteFileRelationship}" reRender="redirectPanel,normal">
+      <apex:param name="recordID" assignTo="{!externalFileID}" value=""/>
+    </apex:actionfunction>
+
+    <apex:outputPanel id="normal" >
+      <apex:outputText rendered="{!NOT(uploadFile)}">
+        <apex:pageBlock id="theblock">
+          <apex:pageBlockButtons id="buttons">
+            <apex:commandButton value="Upload File" action="{!toggleUploadFile}"  reRender="redirectPanel,normal"/>
+          </apex:pageBlockButtons>
+
+          <apex:pageBlockTable value="{!efrs}" var="link" id="theTable" styleClass="makeRows" style="table-layout:fixed;">
+            <apex:facet name="header">File Links</apex:facet>
+            <apex:column width="50">
+              <a href="#" onclick="testIsInConsole('{!link.id}','edit');"><apex:outputText value="Edit"></apex:outputText></a>
+              <a href="#" onclick="if(confirm('Are you sure you want to delete this item?')){testIsInConsole('{!link.id}','Delete');}"><apex:outputText value="Delete"></apex:outputText></a>
+            </apex:column>
+
+            <apex:column >
+              <apex:facet name="header">Filename</apex:facet>
+              <apex:outputText value="{!link.FileLInk__External_File__r.Filename__c}"/>
+            </apex:column>
+                
+            <!--<apex:outputLink title="" value="/{!link.FileLInk__External_File__r.id}/e?retURL=/{!sobjectId}" onclick="testIsInConsole('{!link.FileLInk__External_File__r.id}');" target="_blank" style="font-weight:bold">Edit</apex:outputLink>                
+            </apex:column>
+
+            <apex:column >
+              <apex:facet name="header">File</apex:facet>
+              <apex:outputText value="{!link.FileLInk__External_File__r.External_ID__c}"/>
+            </apex:column>-->
+
+            <apex:column >
+              <apex:facet name="header">Tags</apex:facet>
+              <apex:outputText value="{!link.Tags__c}"/>
+            </apex:column>
+
+            <apex:column >
+              <apex:facet name="header">Is Private?</apex:facet>
+              <apex:outputField value="{!link.FileLInk__External_File__r.Is_Private__c}"/>
+            </apex:column>
+           
+            <apex:column style="word-wrap: break-word;">
+              <apex:facet name="header">URL</apex:facet>
+              <a href="#" onclick="testIsInConsole('{!link.FileLInk__External_File__r.Public_URL__c}','publicURL');"><apex:outputText value="{!link.FileLInk__External_File__r.Public_URL__c}"/></a>
+            </apex:column>
+            
+            <!--<apex:column >
+              <apex:facet name="header">Created by</apex:facet>
+              <apex:outputText value="{!link.Createdby.Name}"/>
+            </apex:column>-->
+            
+            <apex:column >
+              <apex:facet name="header">Created Date</apex:facet>
+              <apex:outputField value="{!link.CreatedDate}"/>
+            </apex:column>
+          </apex:pageBlockTable>
+        </apex:pageBlock>
+      </apex:outputText>
+    </apex:outputPanel>
+
+    <apex:outputPanel id="redirectPanel" >
+      <apex:outputText rendered="{!uploadFile}" id="theoutputText">
+        <c:UploadFileComp vSobjectId="{!vSobjectId}" RefreshCall="vfalseUploadFile();"/>
+      </apex:outputText>
+    </apex:outputPanel>
+  </apex:form>
+</apex:component>

@@ -1,0 +1,128 @@
+<apex:component controller="Generic_Server_Upload_Controller" access="Global" allowDML="true">
+    <apex:attribute name="vSobjectId" type="Id" assignTo="{!objectId}" description="Id for the object to display attachment for" access="global" />
+    <apex:attribute name="RefreshCall" type="String"  description="" access="global" />
+    <apex:attribute name="callbackError" description="This javascript function to call after upload and there is an error" type="String" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.JqueryExtras, 'jquery.min.js')}"  />
+    <apex:includeScript value="{!URLFOR($Resource.ForceTk, 'Force.com-JavaScript-REST-Toolkit-master/forcetk.js')}"  />
+    <script type="text/javascript">
+		// Get an instance of the REST API client and set the session ID
+		var forcetkClient = new forcetk.Client();
+		forcetkClient.setSessionToken('{!$Api.Session_ID}');
+    
+    </script>
+    
+    <Style>
+        .loader {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        width: 150px;
+        height: 150px;
+        margin: -75px 0 0 -75px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        display: none;
+        }
+        
+        @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+        }
+    </Style>
+    
+    <apex:pageBlockSection id="thetagSection">
+        <apex:inputField label="Tags" value="{!efrRecord.Tags__c}" id="tags" html-name="test"/>
+    </apex:pageBlockSection>
+    
+    <div style="text-align:center;">
+        <input type="file" id="fileId" name="attFile" /><br/>
+        <div class="loader" id="loader"></div> 
+    </div>
+    
+    <!--apex:actionFunction name="passToController" action="{!attachFile}" >
+<apex:param name="fname" value="" assignTo="{!fileName}" />
+<apex:param name="body" value="" assignTo="{!fileBody}"/>
+</apex:actionFunction-->
+    <apex:commandButton value="Save" onclick="remoteLocationPost(); return false;" />
+    <script>
+    
+
+    
+    function handleResult(result, event) { 
+        console.log('----> File Version created. Processing...');
+        console.log(result);
+        console.log(event);
+        
+        Console.log('handleResult');
+        setTimeout(function(){
+            window.parent.location = '/{!objectId}';
+        }, 10000);
+    }
+    
+    
+    var blobfile;
+
+    function attLoaded(response) {  
+        var  input = document.getElementById("fileId");
+        var filename= input.value;        
+        var mimeType= input.files[0] != null ? input.files[0].type : '';
+        
+        var chosen = document.querySelector("select[id*='tags_selected']")
+        var arrChosenTags   =   new Array();
+        var intLen  =  chosen.length;
+        
+        for(var i=0; i < intLen; i++)
+        {
+            //alert(chosen.options[i].text);
+            arrChosenTags[i] =   chosen.options[i].text;
+        }
+        
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.Generic_Server_Upload_Controller.attachFile3}',
+            response.id,filename,'{!objectId}', arrChosenTags, mimeType,
+            function(result, event) {
+                console.log('----> File Version created. Processing...');
+                console.log(result);
+                console.log(event);
+                
+                if(event.statusCode !== 200) {
+                    document.getElementById("loader").style.display = "none";
+                    document.getElementById("fileId").style.display = "block";
+                    {!callbackerror}
+                    return;
+                }
+                {!RefreshCall}
+            }
+        );
+        //window.parent.location = '/{!objectId}';
+    }
+    
+    function remoteLocationPost(){
+        var file= document.getElementById("fileId").files[0];
+        
+        document.getElementById("loader").style.display = "block";
+        document.getElementById("fileId").style.display = "none";
+        
+        
+        forcetkClient.createBlob('ContentVersion', {
+              Origin: 'H', // 'H' for Chatter File, 'C' for Content Document
+              PathOnClient: file.name
+          }, file.name, 'VersionData', file, function(response){
+              console.log(response);
+              attLoaded(response);
+          }, function(request, status, response){
+             
+          });
+        
+        //getAsText(fbody); 
+    }   
+    </script>
+    
+</apex:component>

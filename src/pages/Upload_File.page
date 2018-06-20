@@ -1,0 +1,47 @@
+<apex:page controller="Upload_File_Controller" id="thepage"> <!--standardController="Case" extensions="Upload_File_Controller"-- >
+<!--c:Cloudinary_Server_Upload controller="Upload_File_Controller"/-->
+    <apex:form id="theform">
+    <apex:actionFunction name="Redirect" action="{!RedirectToFileLink}" >
+                </apex:actionFunction>
+
+    <script type="text/javascript">
+
+        Visualforce.remoting.timeout = 120000;
+
+        function createLink(e, data) {
+            
+            
+            var chosen = document.getElementById("thepage:theform:theblock:thetagSection:tags_selected");
+            var arrChosenTags   =   new Array();
+            var intLen  =  chosen.length;
+
+            for(var i=0; i < intLen; i++)
+            {
+               //alert(chosen.options[i].text);
+               arrChosenTags[i] =   chosen.options[i].text;
+            }
+
+            
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.Upload_File_Controller.fileUploadedwithTag}',
+                JSON.parse(e.responseText).public_id, 
+                JSON.parse(e.responseText).url,
+                '{!objectId}',arrChosenTags,
+                function(result){
+                    Redirect();
+                }
+
+            );
+        }
+
+    </script>
+    <apex:pageBlock id="theblock">
+        <apex:pageBlockSection id="thetagSection">
+        <apex:inputField label="Tags" value="{!efrRecord.Tags__c}" id="tags"/>
+    </apex:pageBlockSection>
+    </apex:pageBlock>
+    </apex:form>
+    <c:Cloudinary_Client_Upload callback="createLink(e, data);" folder=""/>
+    
+</apex:page>

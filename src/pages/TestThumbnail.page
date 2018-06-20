@@ -1,0 +1,16 @@
+<apex:page >
+    
+    <!--a href="http://www.travel-explorer.com/boracay-philippines/" target="_blank">
+<img src="https://incap-filelink-dev-ed--c.na40.content.force.com/sfc/dist/version/download/?oid=00D460000015vAI&ids=068460000008J8d&d=/a/46000000PCoF/bDGTb2uiVyIMgeio8nvbxvbvuHkvD7KRP57nyzB9Ghk&operationContext=DELIVERY&dpt=null" width="300" height="225" alt="Photo of White Beach in Boracay, Philippines" />
+
+https://incap-filelink-dev-ed--c.na40.content.force.com/sfc/dist/version/download/?oid=00D460000015vAIEAY&ids=068460000008MZUAA2&d=/a/46000000PCpS/OCTOymyHB3fKzAtxKf8h3ulYPaPYV7AeyoarDprUJQs
+</a-->
+    
+    
+    <a href="/sfc/servlet.shepherd/version/download/06946000000CUUf" target="_blank">
+<img src="https://incap-filelink-dev-ed.my.salesforce.com/sfc/p/#460000015vAI/a/46000000PCoF/bDGTb2uiVyIMgeio8nvbxvbvuHkvD7KRP57nyzB9Ghk" width="300" height="225" alt="Photo of White Beach in Boracay, Philippines" />
+        
+        
+</a>
+
+</apex:page>
